@@ -5,7 +5,7 @@
 #
 source /data_dirs.env
 JETTY_NEED_CONFIG=false
-DATA_PATH=/archiva-data
+DATA_PATH=/srv
 JETTY_CONF_PATH=/jetty_conf
 
 mkdir -p ${DATA_PATH}/temp
@@ -24,7 +24,7 @@ for datadir in "${DATA_DIRS[@]}"; do
     if [ -e "${datadir}-template" ]
     then
       cp -pr ${datadir}-template ${DATA_PATH}/${datadir}
-    else 
+    else
       mkdir -p ${DATA_PATH}/${datadir}
     fi
     chown archiva:archiva ${DATA_PATH}/${datadir}
@@ -72,7 +72,7 @@ if [ $JETTY_NEED_CONFIG == true ]
 then
   cp -f ${JETTY_CONF_PATH}/jetty.xml /tmp/jetty.xml
   #
-  # DB configuration 
+  # DB configuration
   #
   # Varaibles:
   # - DB_TYPE
@@ -110,11 +110,11 @@ then
   # Varaibles:
   # - SSL_ENABLED
   # - KEYSTORE_PATH
-  # - KEYSTORE_PASS 
+  # - KEYSTORE_PASS
   # - KEYSTORE_ALIAS
   # - CA_CERT
-  # - CA_CERTS_DIR 
-  
+  # - CA_CERTS_DIR
+
   if [ "$SSL_ENABLED" = true ]
   then
     KEYSTORE_PATH=${KEYSTORE_PATH:-${DATA_PATH}/ssl/keystore}
@@ -122,7 +122,7 @@ then
     if [ ! -e "$KEYSTORE_PATH" ]
     then
       echo "Generating self-signed keystore and certificate for HTTPS support(Dst: $KEYSTORE_PATH)"
-      mkdir -p ${DATA_PATH}/ssl/ 
+      mkdir -p ${DATA_PATH}/ssl/
       KEYSTORE_ALIAS=${KEYSTORE_ALIAS:-archiva}
       keytool -genkey -noprompt -trustcacerts \
         -keyalg RSA \

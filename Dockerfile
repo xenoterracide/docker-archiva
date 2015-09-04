@@ -1,43 +1,30 @@
-FROM java:7u65
-MAINTAINER Lu Han <lhan@xetus.com>
+FROM java:latest
+MAINTAINER Caleb Cushing <xenoterracide@gmail.com>
+WORKDIR /tmp
 
 ENV VERSION 2.2.0
+ENV DIRNAME apache-archiva-$VERSION
+ENV FILENAME $DIRNAME-bin.tar.gz
+ENV MIRROR_ROOT http://archive.apache.org/dist/archiva/$VERSION/binaries/
 
-#
-# Go get the needed tar/jar we'll installing
-#
-RUN curl -sSLo /apache-archiva-$VERSION-bin.tar.gz http://archive.apache.org/dist/archiva/$VERSION/binaries/apache-archiva-$VERSION-bin.tar.gz \
-  && tar --extract --ungzip --file apache-archiva-$VERSION-bin.tar.gz --directory / \
-  && rm /apache-archiva-$VERSION-bin.tar.gz && mv /apache-archiva-$VERSION /opt/archiva \
-  && curl -sSLo /opt/archiva/lib/mysql-connector-java-5.1.35.jar http://search.maven.org/remotecontent?filepath=mysql/mysql-connector-java/5.1.35/mysql-connector-java-5.1.35.jar
-
+ADD $FILENAME /opt
 #
 # Adjust ownership and Perform the data directory initialization
 #
 ADD data_dirs.env /data_dirs.env
 ADD init.bash /init.bash
 ADD jetty_conf /jetty_conf
-# Sync calls are due to https://github.com/docker/docker/issues/9547
-RUN useradd -d /opt/archiva/data -m archiva &&\
-  cd /opt && chown -R archiva:archiva archiva &&\
-  cd / && chown -R archiva:archiva /jetty_conf &&\
-  chmod 755 /init.bash &&\
-  sync && /init.bash &&\
-  sync && rm /init.bash
 
-#
-# Add the bootstrap cmd
-#
+RUN useradd -d /opt/$DIRNAME/data -m archiva
+RUN cd /opt && chown -R archiva:archiva $DIRNAME
+RUN cd / && chown -R archiva:archiva /jetty_conf
+
 ADD run.bash /run.bash
 RUN chmod 755 /run.bash
 
-#
-# All data is stored on the root data volume.
+RUN ls -l /srv
+
 USER archiva
-
-VOLUME ["/archiva-data"]
-
-# Standard web ports exposted
+VOLUME ["/srv"]
 EXPOSE 8080/tcp 8443/tcp
-
 ENTRYPOINT ["/run.bash"]
