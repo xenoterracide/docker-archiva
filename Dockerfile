@@ -14,8 +14,6 @@ RUN wget --no-verbose $MIRROR_ROOT/$FILENAME && tar -xvf $FILENAME && rm $FILENA
 RUN useradd -d /srv/archiva archiva
 RUN install --owner archiva --group archiva --directory /var/log/archiva
 RUN install --owner archiva --group archiva --directory --mode 700 /tmp/archiva
-RUN install --owner archiva --group archiva --directory --mode 700 /srv/archiva/repositories
-RUN install --owner archiva --group archiva --directory --mode 700 /srv/archiva/data
 
 WORKDIR /opt/$DIRNAME
 RUN rmdir logs temp
@@ -26,6 +24,6 @@ RUN ln -s /srv/archiva/data data
 RUN chown archiva. conf/$CONF
 
 USER archiva
-VOLUME ["/srv/archiva"]
+VOLUME ["/srv/archiva/data", "/srv/archiva/repositories", "/var/log/archiva"]
 EXPOSE 8080/tcp 8443/tcp
 CMD ["./bin/archiva", "console"]
