@@ -11,9 +11,9 @@ ADD $FILENAME /opt
 
 RUN useradd -d /srv/archiva archiva
 RUN install --owner archiva --group archiva --directory /var/log/archiva
-RUN install --owner archiva --group archiva --directory /tmp/archiva --mode 700
-RUN install --owner archiva --group archiva --directory /srv/archiva/repositories
-RUN install --owner archiva --group archiva --directory /srv/archiva/data
+RUN install --owner archiva --group archiva --directory --mode 700 /tmp/archiva
+RUN install --owner archiva --group archiva --directory --mode 700 /srv/archiva/repositories
+RUN install --owner archiva --group archiva --directory --mode 700 /srv/archiva/data
 
 WORKDIR /opt/$DIRNAME
 RUN rmdir logs temp
@@ -21,8 +21,6 @@ RUN ln -s /var/log/archiva logs
 RUN ln -s /tmp/archiva temp
 RUN ln -s /srv/archiva/repositories repositories
 RUN ln -s /srv/archiva/data data
-
-ADD $CONF conf/
 RUN chown archiva. conf/$CONF
 
 USER archiva
