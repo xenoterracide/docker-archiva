@@ -23,6 +23,7 @@ RUN ln -s /srv/archiva/repositories repositories
 RUN ln -s /srv/archiva/data data
 
 ADD $CONF conf/
+RUN chown archiva. conf/$CONF
 
 USER archiva
 VOLUME ["/srv/archiva"]
