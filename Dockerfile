@@ -7,7 +7,9 @@ ENV FILENAME $DIRNAME-bin.tar.gz
 ENV MIRROR_ROOT http://archive.apache.org/dist/archiva/$VERSION/binaries/
 ENV CONF archiva.xml
 
-ADD $FILENAME /opt
+WORKDIR /tmp
+
+RUN wget --no-verbose $MIRROR_ROOT/$FILENAME && tar -xvf $FILENAME && rm $FILENAME && mv $DIRNAME /opt
 
 RUN useradd -d /srv/archiva archiva
 RUN install --owner archiva --group archiva --directory /var/log/archiva
